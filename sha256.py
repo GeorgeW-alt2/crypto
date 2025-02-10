@@ -10,26 +10,26 @@ class ZetaMiner:
     def __init__(self):
         # Known first few zeros of zeta function
         self.zeros = [
-            14,
-            21,
-            25,
-            30,
-            33,
-            38,
-            41,
-            43,
-            48,
-            50,
-            53,
-            56,
-            59,
-            61,
-            65,
-            67,
-            70,
-            72,
-            76,
-            77
+            14.134725141734693,
+            21.022039638771554,
+            25.010857580145688,
+            30.424876125859513,
+            32.935061587739189,
+            37.586178158825671,
+            40.918719012147495,
+            43.327073280914193,
+            48.005150881167159,
+            49.773832477672302,
+            52.970321477714385,
+            56.446247697298218,
+            59.347044002602353,
+            60.831778525733533,
+            65.112544048184674,
+            67.079810529494173,
+            69.546401711173101,
+            72.067157674481907,
+            75.704690699083392,
+            77.144840068874786
         ]
         
     def zeta_critical_line(self, t: float, terms: int = 1000) -> complex:
@@ -120,4 +120,4 @@ if __name__ == "__main__":
     print("Starting Riemann zeta function based SHA-256 mining")
     print(f"Using {multiprocessing.cpu_count()} CPU cores")
     miner = ZetaMiner()
-    miner.mine(difficulty=5)
+    miner.mine(difficulty=7)
