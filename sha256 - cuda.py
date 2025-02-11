@@ -35,11 +35,14 @@ def mine_kernel(nonces, chunk_size, zeta_real, target_bits, results):
         if (hash_val >> (32 - target_bits)) == 0:
             results[idx] = 1
 
-def verify_pow(nonce: int, zeta_val: complex, difficulty: int) -> bool:
+def create_block_header(nonce: int, zeta_val: complex) -> bytes:
+    """Create consistent block header format"""
+    # Format zeta value consistently
+    zeta_str = str(abs(zeta_val.real)).replace('.', '')[:64]
+    return f"GeorgeW{nonce}{zeta_str}".encode()
+
+def verify_pow(block_header: bytes, difficulty: int) -> bool:
     """Verify proof of work on CPU"""
-    # Create block header with nonce and zeta value
-    block_header = f"GeorgeW{nonce}{str(abs(zeta_val.real)).replace('.', '')[:64]}".encode()
-    
     # Calculate SHA-256 hash
     hash_result = hashlib.sha256(block_header).hexdigest()
     
@@ -72,7 +75,7 @@ class ZetaMiner:
         ]
     
     def zeta_critical_line(self, t: float, terms: int = 1000) -> complex:
-        s = 0.91 + 1j * t
+        s = 0.5 + 1j * t  # Changed back to 0.5 for critical line
         N = int(np.sqrt(t / (2 * np.pi)))
         
         result = 0
@@ -112,12 +115,13 @@ class ZetaMiner:
             if results[i] == 1:
                 found_nonce = start_nonce + i
                 
+                # Create block header
+                block_header = create_block_header(found_nonce, zeta_val)
+                
                 # Verify on CPU with actual SHA-256
-                if verify_pow(found_nonce, zeta_val, difficulty):
-                    # Generate final hash for verification
-                    block_header = f"GeorgeW{found_nonce}{str(abs(zeta_val.real)).replace('.', '')[:64]}".encode()
+                if verify_pow(block_header, difficulty):
                     hash_result = hashlib.sha256(block_header).hexdigest()
-                    return f"{found_nonce}{str(abs(zeta_val.real)).replace('.', '')[:64]}", hash_result
+                    return found_nonce, hash_result
         
         return None
 
@@ -175,12 +179,14 @@ class ZetaMiner:
                                     print(f"Nonce: {found_nonce}")
                                     print(f"Hash: {hash_result}")
                                     
-                                    # Verify the proof of work
-                                    if verify_pow(found_nonce, zeta_val, difficulty):
+                                    # Final verification
+                                    block_header = create_block_header(found_nonce, zeta_val)
+                                    if verify_pow(block_header, difficulty):
                                         print("✓ Proof of Work verified successfully")
+                                        return
                                     else:
                                         print("✗ Proof of Work verification failed!")
-                                    return
+                                        continue
                             except Exception as e:
                                 print(f"Error processing chunk: {e}")
                                 continue
