@@ -56,7 +56,8 @@ class ZetaMiner:
         
         for nonce in range(start_nonce, start_nonce + chunk_size):
             # Combine nonce with zeta value for mining
-            data = f"GeorgeW{nonce}{str(abs(zeta_val.real)).replace('.', '')[:6]}{str(zeta_val.imag).replace('.', '')[:6]}".encode()
+            data = f"GeorgeW{nonce}{str(abs(zeta_val.real)).replace('.', '')[:6]}".encode()# data = f"GeorgeW{nonce}{str(abs(zeta_val.real)).replace('.', '')[:6]}{str(zeta_val.imag).replace('.', '')[:6]}".encode()
+
             hash_result = hashlib.sha256(data).hexdigest()
             
             if hash_result.startswith(target):
@@ -82,7 +83,7 @@ class ZetaMiner:
                 nonce = 0
                 futures = []
                 
-                for i in range(10000000):
+                for i in range(5000000):
                     # Keep threads busy
                     while len(futures) < threads:
                         future = executor.submit(self.mine_chunk, nonce, chunk_size, difficulty, t)
