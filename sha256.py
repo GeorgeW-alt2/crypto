@@ -56,7 +56,7 @@ class ZetaMiner:
         
         for nonce in range(start_nonce, start_nonce + chunk_size):
             # Combine nonce with zeta value for mining
-            data = f"GeorgeW{nonce}{zeta_val.real:.6f}{zeta_val.imag:.6f}".encode()
+            data = f"GeorgeW{nonce}{str(abs(zeta_val.real)).replace('.', '')[:6]}{str(zeta_val.imag).replace('.', '')[:6]}".encode()
             hash_result = hashlib.sha256(data).hexdigest()
             
             if hash_result.startswith(target):
@@ -82,7 +82,7 @@ class ZetaMiner:
                 nonce = 0
                 futures = []
                 
-                while True:
+                for i in range(10000000):
                     # Keep threads busy
                     while len(futures) < threads:
                         future = executor.submit(self.mine_chunk, nonce, chunk_size, difficulty, t)
@@ -120,4 +120,4 @@ if __name__ == "__main__":
     print("Starting Riemann zeta function based SHA-256 mining")
     print(f"Using {multiprocessing.cpu_count()} CPU cores")
     miner = ZetaMiner()
-    miner.mine(difficulty=7)
+    miner.mine(difficulty=8)
