@@ -72,7 +72,7 @@ class ZetaMiner:
         ]
     
     def zeta_critical_line(self, t: float, terms: int = 1000) -> complex:
-        s = 0.5 + 1j * t
+        s = 0.91 + 1j * t
         N = int(np.sqrt(t / (2 * np.pi)))
         
         result = 0
@@ -117,7 +117,7 @@ class ZetaMiner:
                     # Generate final hash for verification
                     block_header = f"GeorgeW{found_nonce}{str(abs(zeta_val.real)).replace('.', '')[:64]}".encode()
                     hash_result = hashlib.sha256(block_header).hexdigest()
-                    return found_nonce, hash_result
+                    return f"{found_nonce}{str(abs(zeta_val.real)).replace('.', '')[:64]}", hash_result
         
         return None
 
